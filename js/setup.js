@@ -9,25 +9,46 @@ var wizardLastNames = ['да Марья', 'Верон', 'Мирабелла', '�
 var coatColors = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
 var eyesColors = ['black', 'red', 'blue', 'yellow', 'green'];
 
-var randomArrayValue = function (arrayName) {
-  var random = Math.floor(Math.random() * arrayName.length);
-  return arrayName[random];
-};
+// массив, заполняется в цикле 4-мя магами
+var similarWizards = [];
+var wizardCount = 4;
+for (var i = 0; i < wizardCount; i++) {
+  similarWizards[i] = {};
+  similarWizards[i].name = randomName(wizardNames, wizardLastNames);
+  similarWizards[i].coatColors = randomArrayValue(coatColors);
+  similarWizards[i].eyesColors = randomArrayValue(eyesColors);
+}
+
+// Функция получения рандомных имени и фамилии мага (использует randomArrayValue)
+function randomName(wizardNameArray, wizardLastNameArray) {
+  return randomArrayValue(wizardNameArray) + ' ' + randomArrayValue(wizardLastNameArray);
+}
+
+// Функция получения рандомного значения из массива (индекса массива)
+function randomArrayValue(array) {
+  var randomIndex = Math.floor(Math.random() * (array.length));
+  return array[randomIndex];
+}
+
 // Найдем шаблон, который мы будем копировать
-var similarWizardTemplate = document.querySelector('#similar-wizard-template').content;
+var wizardTemplate = document.querySelector('#similar-wizard-template').content;
 // И найдем элемент, в который мы будем вставлять похожих магов
-var similarListElement = document.querySelector('.setup-similar-list');
+var wizardsList = document.querySelector('.setup-similar-list');
+var fragment = document.createDocumentFragment();
 
 // Отрисуем наш шаблон в документ
-for (var i = 0; i < 4; i++) {
+for (var j = 0; j < wizardCount; j++) {
   // true, если дочерние узлы также должны быть клонированы, или false, чтобы клонировать только указанный узел.
-  var wizardElement = similarWizardTemplate.cloneNode(true);
-  wizardElement.querySelector('.setup-similar-label').textContent = randomArrayValue(wizardNames) + ' ' + randomArrayValue(wizardLastNames);
-  wizardElement.querySelector('.wizard-coat').style.fill = randomArrayValue(coatColors);
-  wizardElement.querySelector('.wizard-eyes').style.fill = randomArrayValue(eyesColors);
-  // Добавляет элемент в конец списка дочерних элементов родителя. Если элемент уже существует он удаляется из текущего родителя и вставляется заново.
-  similarListElement.appendChild(wizardElement);
+  var wizardElement = wizardTemplate.cloneNode(true);
+
+  wizardElement.querySelector('.setup-similar-label').textContent = similarWizards[j].name;
+  wizardElement.querySelector('.wizard-coat').style.fill = similarWizards[j].coatColors;
+  wizardElement.querySelector('.wizard-eyes').style.fill = similarWizards[j].eyesColors;
+  // Добавляет элемент в конец списка дочерних элементов родителя.
+  // Если элемент уже существует он удаляется из текущего родителя и вставляется заново.
+  fragment.appendChild(wizardElement);
 }
+wizardsList.appendChild(fragment);
 
 // Покажем блок с похожими персонажами
 document.querySelector('.setup-similar').classList.remove('hidden');
